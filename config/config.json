@@ -1,0 +1,55 @@
+{
+  "rucapcha": {
+    "apiKey": ""
+  },
+  "time": {
+    "general": 5,
+    "moderateBg": 60,
+    "moderationTimeout": 1800,
+    "stage2": 3600
+  },
+  "tasks": [
+    {
+      "profileName": "ydirect1",
+      "campaigns": [
+        {
+          "id": "68425967",
+          "groups": [
+            {
+              "id": "4764838841",
+              "domain": "-",
+              "keys": [
+                "Ключ 1",
+                "Ключ 22",
+                "Ключ 333",
+                "Ключ 4444"
+              ],
+              "banner": {
+                "id": "№ M-11476908241",
+                "title": "",
+                "companyName": "name"
+              }
+            }
+          ]
+        },
+        {
+          "id": "0",
+          "groups": [
+            {
+              "id": "0",
+              "domain": "",
+              "keys": [
+                ""
+              ],
+              "banner": {
+                "id": "0",
+                "title": "",
+                "companyName": "name"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
