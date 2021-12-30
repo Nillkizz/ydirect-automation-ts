@@ -8,7 +8,6 @@ import { actionsBetween } from './helpers';
 import { addStringFormat } from './modules/string_format';
 import { EditGroupPage, CampaignsPage, pages} from "./models";
 import { firstStep } from './scripts';
-import { jsClick } from './modules/utils';
 import { Moderation } from './models/moderation';
 import { CampaignPage } from './models/campaign-page';
 import { EditBannerPage } from './models/edit_banner-page';
@@ -55,10 +54,9 @@ type cacheType = {
 
     for (const campaign of profile.campaigns){
       const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
-      console.log(idValues)
-      // await firstStep(pages, idValues, campaign)
+      await firstStep(pages, idValues, campaign)
 
-      // pages.moderation.addToCheck(idValues)
+      pages.moderation.addToCheck(idValues)
       await secondStep(await ctx.newPage(), idValues, campaign)
     }
   }

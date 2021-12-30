@@ -7,6 +7,8 @@ import { baseIdValues } from "..";
 type firstStepArgs = [pages: pages, idValues:baseIdValues, campaign:campaignType]
 export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
   const {campaignId, groupId, bannerId}= idValues;
+  const campaignData = campaign.firstStep
+
   pages.editGroup.setFormatUrlObject({campaignId, groupId})
   await pages.editGroup.navigate()
   await actionsBetween({page: pages.editGroup.page})
@@ -20,7 +22,7 @@ export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
   pages.campaigns.banner.archive()
   await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
 
-  await pages.editGroup.updateKeywords(campaign.keys)
+  await pages.editGroup.updateKeywords(campaignData.keys)
   await actionsBetween({page: pages.campaigns.page})
 
   pages.campaigns.banner.unarchive()
@@ -29,13 +31,13 @@ export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
   pages.campaign.setFormatUrlObject({campaignId})
   await pages.campaign.navigate();
   await actionsBetween({page: pages.campaigns.page})
-  await pages.campaign.replaceKeys(campaign.replaceKeys)
+  await pages.campaign.replaceKeys(campaignData.replaceKeys)
   await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
 
   pages.editBanner.setFormatUrlObject(idValues)
   await pages.editBanner.navigate()
   await actionsBetween({page: pages.editBanner.page})
-  await pages.editBanner.changeData(campaign)
+  await pages.editBanner.changeDataFirstStep(campaign)
   await actionsBetween({page: pages.editBanner.page})
   
   pages.campaigns.banner.start()

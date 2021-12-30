@@ -2,12 +2,25 @@ import config from './config.json';
 
 export type campaignType = {
   id: string
-  keys: string[]
-  replaceKeys: Record<string, string>
-  url: string
-  title: string
-  description: string
-  company: {name: string, address: string}
+  firstStep: {
+    domain: string
+    title: string
+    description: string
+    company: {name: string, address: string}
+    keys: string[]
+    replaceKeys: Record<string, string>
+  }
+  secondStep:{
+    domain: string,
+    title: string,
+    description: string,
+    vbc: {
+      name: string,
+      phone:{cc: string, cr:string, p:string},
+      country: string,
+      city: string
+    }
+  }
 }
 
 export type profileType = {

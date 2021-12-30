@@ -6,7 +6,7 @@ import { Page } from "./page";
 export class CampaignPage extends Page {
   protected _url: string = "https://direct.yandex.ru/registered/main.pl?cid={campaignId}&cmd=showCamp&tab=all";
 
-  async replaceKeys(keyWords:campaignType['replaceKeys']){
+  async replaceKeys(keyWords:campaignType['firstStep']['replaceKeys']){
     for (const [oldKey, newKey] of Object.entries(keyWords)){
       const keyWord = this.page.locator(`.b-phrase__content:has-text("${oldKey}")`)
       if (await keyWord.isVisible()){
