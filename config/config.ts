@@ -1,51 +1,40 @@
 import config from './config.json';
 
-export type bannerType = {
+export type campaignType = {
   id: string
-  title: string
-  companyName: string
-}
-
-export type groupType = {
-  id: string
-  domain: string
   keys: string[]
-  banner: bannerType
+  replaceKeys: Record<string, string>
+  url: string
+  title: string
+  description: string
+  company: {name: string, address: string}
 }
 
-export type companyType = {
-  id: string
-  groups: groupType[]
-}
-
-export type taskType = {
-  profileName: string
-  campaigns: companyType[]
+export type profileType = {
+  name: string
+  campaigns: campaignType[]
 }
 
 export interface IConfig {
-  rucapcha: {
-    apiKey: string
-  }
   time: {
     general: number
     moderateBg: number
+    withoutReload: number
+    moderationTimeout: number,
     stage2: number
   }
-  tasks: taskType[]
+  profiles: profileType[]
 }
 
 
 
 export class Config implements IConfig {
-  rucapcha: IConfig['rucapcha'];
-  time: { general: number; moderateBg: number; stage2: number }
-  tasks: taskType[]
+  time: { general: number; moderateBg: number; withoutReload: number; moderationTimeout: number; stage2: number; };
+  profiles: profileType[]
 
   constructor() {
-    this.rucapcha = config.rucapcha
     this.time = config.time
-    this.tasks = config.tasks
+    this.profiles = config.profiles
     this.init();
   }
 

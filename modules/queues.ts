@@ -8,7 +8,7 @@ type queue = {
 }
 
 
-type enqueueArgs = { cb: (attempts?: number) => boolean, taskName: string, queueName: string }
+type enqueueArgs = { cb: (attempts: number) => any, taskName: string, queueName?: string }
 interface IQueues {
   queues: { [queueName: string]: queue }
   types: { [typeName: string]: Function }
@@ -22,22 +22,23 @@ interface IQueues {
 
 
 export class Queues implements IQueues {
-  queues: { [queueName: string]: queue; };
-  types: { [typeName: string]: Function; };
-  interval: number;
+  interval: number = 10;
+  queues: Record<string, queue>;
+  types: Record<string, Function>;
 
   /**
    * @param {Number} [interval] - Default interval in ms beetween tasks running. Recommended >=10ms. Default - 10ms.
    */
-  constructor(interval: number = 10) {
+  constructor(interval?: number ) {
+    if (typeof interval =='number') this.interval = interval;
     this.queues = {};
     this.types = {
       "Function": (() => { }).constructor,
       "AsyncFunction": (async () => { }).constructor,
     };
-    this.interval = interval;
     this.registerQueue("main");
     this.runQueue("main");
+
   }
 
   /**
@@ -71,7 +72,7 @@ export class Queues implements IQueues {
             ? await task.cb(attempts)
             : task.cb(attempts);
 
-        if (result) {
+        if (!!result) {
           queue.tasks.shift();
           queue.tmp.countAttempts = 0;
         }
@@ -100,7 +101,7 @@ export class Queues implements IQueues {
   }
 
   /**
-   * Unenqueues a task by name from the queue.
+   * Unenqueues all tasks by name from the queue.
    * @param  {String} taskName - Name of task name for unenqueue it.
    * @param  {String} [queueName] - Name of queue for unenqueue task. Default "main".
    */

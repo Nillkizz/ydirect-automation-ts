@@ -1,8 +1,7 @@
 import EventEmitter from "events";
 
-import playwright from "playwright";
+import pw from "playwright";
 
-import type { taskType } from "../../config/config"
 import { RequestInfo, RequestInit } from "node-fetch";
 import { URLSearchParams } from "url";
 
@@ -16,7 +15,7 @@ interface IDolphin {
   profile_name: string
 }
 
-export async function get_context(task: taskType): Promise<playwright.BrowserContext> {
+export async function get_context(profileName: string): Promise<pw.BrowserContext> {
   /**
    * @fires logged_in
    * @fires profiles_fetched
@@ -36,11 +35,11 @@ export async function get_context(task: taskType): Promise<playwright.BrowserCon
     }
 
     private async init() {
-      const creds = {
+      const credentials = {
         username: process.env.DOLPHIN_USERNAME || '',
         password: process.env.DOLPHIN_PASSWORD || '',
       }
-      this.login(creds);
+      this.login(credentials);
 
       this.on("logged_in", async () => {
         const profiles: DolphinProfile = await this.get_profiles_list();
@@ -98,15 +97,15 @@ export async function get_context(task: taskType): Promise<playwright.BrowserCon
     }
   }
 
-  const dolphin = new Dolphin({ profileName: task.profileName });
+  const dolphin = new Dolphin({ profileName });
 
   return await new Promise(res => {
     dolphin.once("profile_started", main);
 
     async function main({ port, wsEndpoint }: { port: string, wsEndpoint: string }) {
       const wsUrl: string = `ws://127.0.0.1:${port}${wsEndpoint}`;
-      const browser: playwright.Browser = await playwright.chromium.connectOverCDP(wsUrl);
-      const context: playwright.BrowserContext = browser.contexts()[0];
+      const browser: pw.Browser = await pw.chromium.connectOverCDP(wsUrl);
+      const context: pw.BrowserContext = browser.contexts()[0];
       for (const page of context.pages().slice(1)) await page.close();
 
       res(context)
