@@ -12,8 +12,6 @@ import { Moderation } from './models/moderation';
 import { CampaignPage } from './models/campaign-page';
 import { EditBannerPage } from './models/edit_banner-page';
 
-console.info('YDirect-automation-ts v0.1.0')
-
 const conf:Readonly<Config> = new Config();
 addStringFormat();
 

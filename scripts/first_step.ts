@@ -27,6 +27,26 @@ export async function firstStep(...[pages, idValues, campaign, ctx]: firstStepAr
   await pages.editGroup.updateKeywords(campaignData.keys)
   await actionsBetween({page: pages.campaigns.page})
 
+  await unarchive(ctx, campaign, idValues)
+
+  pages.campaign.setFormatUrlObject({campaignId})
+  await pages.campaign.navigate();
+  await actionsBetween({page: pages.campaigns.page})
+  pages.campaigns.banner.archive()
+  await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
+  await pages.campaign.replaceKeys(campaignData.replaceKeys)
+  await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
+  await unarchive(ctx, campaign, idValues)
+
+  pages.editBanner.setFormatUrlObject(idValues)
+  await pages.editBanner.navigate()
+  await actionsBetween({page: pages.editBanner.page})
+  
+  pages.campaigns.banner.start()
+  await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
+}
+
+async function unarchive(ctx: pw.BrowserContext, campaign:campaignType, idValues: baseIdValues){
   const shCampPage = await ctx.newPage();
   await shCampPage.goto(`https://direct.yandex.ru/registered/main.pl?cid=${campaign.id}&cmd=showCamp&tab=all`)
   await actionsBetween({page: shCampPage})
@@ -38,17 +58,4 @@ export async function firstStep(...[pages, idValues, campaign, ctx]: firstStepAr
   await jsClick(shCampPage.locator('.popup .popup__content button:has-text("Да")'))
   await actionsBetween({ms: "withoutReload", page: shCampPage})
   shCampPage.close();
-
-  pages.campaign.setFormatUrlObject({campaignId})
-  await pages.campaign.navigate();
-  await actionsBetween({page: pages.campaigns.page})
-  await pages.campaign.replaceKeys(campaignData.replaceKeys)
-  await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
-
-  pages.editBanner.setFormatUrlObject(idValues)
-  await pages.editBanner.navigate()
-  await actionsBetween({page: pages.editBanner.page})
-  
-  pages.campaigns.banner.start()
-  await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
 }
