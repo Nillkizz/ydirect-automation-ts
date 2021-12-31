@@ -4,14 +4,17 @@ import { campaignType, Config } from "../config/config";
 import { Beats } from "../modules/beats";
 import { baseIdValues } from "../index";
 import { Queues } from "../modules/queues";
-import { jsClick } from "../modules/utils";
+import { applyMixins, jsClick } from "../modules/utils";
 import { actionsBetween } from "../helpers";
 import { secondStep } from "../scripts";
+import { EventEmitter } from "stream";
 
 type campaignToCheck = {ts: number, idValues: baseIdValues, campaign:campaignType}
 type toCheck = {main: {interval?: number, items: Record<string, campaignToCheck>}, bg: {interval?: number, items: Record<string, campaignToCheck>}}
 
-export class Moderation extends Beats{
+interface Moderation extends EventEmitter{}
+
+class Moderation extends Beats{
   page: pw.Page;
   pages: pages|undefined;
   toCheck: toCheck = {main: {items:{}}, bg: {items:{}}};
@@ -68,6 +71,7 @@ export class Moderation extends Beats{
           rmItem(idValues.campaignId)
           await secondStep(await this.ctx.newPage(), idValues, campaign)
           console.log(idValues.campaignId + ' Moderation passed!');
+          this.emit('done');
         }
         return true;
       };
@@ -75,6 +79,7 @@ export class Moderation extends Beats{
       if (beatName == 'main' && Date.now() - ts > this.conf.time.moderationTimeout){
         rmItem(idValues.campaignId)
         this.toCheck['bg'].items[idValues.campaignId] = item;
+        this.emit('done')
       }
 
       this.queues.enqueue({cb, taskName: 'checkM'+idValues.campaignId })
@@ -99,8 +104,12 @@ export class Moderation extends Beats{
     await actionsBetween({page: this.page})
   }
 
-  addToCheck(idValues:baseIdValues, campaign:campaignType){
+  сheck(idValues:baseIdValues, campaign:campaignType){
     this.toCheck.main.items[idValues.campaignId] = {ts: Date.now(), idValues, campaign}
     console.log(`Group №${idValues.groupId} watched for moderation`)
+    return new Promise((res)=>this.on('done', res))
   }
 }
+
+applyMixins(Moderation, [EventEmitter])
+export {Moderation}

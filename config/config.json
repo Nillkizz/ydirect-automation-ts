@@ -3,7 +3,7 @@
     "general": 1,
     "withoutReload": 3,
     "moderateBg": 60,
-    "moderationTimeout": 1800,
+    "moderationTimeout": 180,
     "stage2": 3600
   },
   "profiles": [

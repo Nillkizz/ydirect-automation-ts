@@ -36,3 +36,16 @@ export const refill = async (a:pw.Locator|Array<[string, string]>, b:string|pw.L
     _r(a as pw.Locator, b as string)
   }
 }
+
+export function applyMixins(derivedCtor: any, constructors: any[]) {
+  constructors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      Object.defineProperty(
+        derivedCtor.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+          Object.create(null)
+      );
+    });
+  });
+}

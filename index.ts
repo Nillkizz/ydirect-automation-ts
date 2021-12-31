@@ -56,7 +56,7 @@ type cacheType = {
       const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
       await firstStep(pages, idValues, campaign)
 
-      pages.moderation.addToCheck(idValues, campaign)
+      await pages.moderation.сheck(idValues, campaign)
     }
   }
   console.log('Done.')
