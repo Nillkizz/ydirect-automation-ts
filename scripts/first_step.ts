@@ -37,8 +37,6 @@ export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
   pages.editBanner.setFormatUrlObject(idValues)
   await pages.editBanner.navigate()
   await actionsBetween({page: pages.editBanner.page})
-  await pages.editBanner.changeDataFirstStep(campaign)
-  await actionsBetween({page: pages.editBanner.page})
   
   pages.campaigns.banner.start()
   await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})

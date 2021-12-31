@@ -2,7 +2,7 @@
   "time": {
     "general": 1,
     "withoutReload": 3,
-    "moderateBg": 5,
+    "moderateBg": 60,
     "moderationTimeout": 1800,
     "stage2": 3600
   },
@@ -12,13 +12,18 @@
       "campaigns": [
         {
           "id": "69386241",
-          "firstStep":{
-            "domain": "https://www.ozon.ru/product/kinohlopushka-suvenirnaya-evrika-27-h-30-sm-176618131/",
-            "title": "Кинохлопушка сувенирная 30х27см Эврика",
-            "description": "Киносъёмки – загадочный и притягательный процесс.",
-            "keys": ["Ключ 1", "Зеркало", "Автомат", "Плоский", "Машинка"],
-            "company": {"name": "wuf", "address": "Россия, Санкт-Петербург, Гражданская улица, 13-15"},
-            "replaceKeys": {"Ключ 1": "Картон", "Зеркало": "Бастурма"}
+          "firstStep": {
+            "keys": [
+              "Ключ 1",
+              "Зеркало",
+              "Автомат",
+              "Плоский",
+              "Машинка"
+            ],
+            "replaceKeys": {
+              "Ключ 1": "Картон",
+              "Зеркало": "Бастурма"
+            }
           },
           "secondStep": {
             "domain": "-",
@@ -26,10 +31,15 @@
             "description": "Киносъёмки – загадочный и притягательный процесс.",
             "vbc": {
               "name": "wuf",
-              "phone":{"cc": "+7", "cr":"900", "p":"5682344"},
+              "phone": {
+                "cc": "+7",
+                "cr": "900",
+                "p": "5682344"
+              },
               "country": "Russia",
               "city": "Moscow"
-            }
+            },
+            "keys": ["Мармелад", "CUDA", "Sprout"]
           }
         }
       ]

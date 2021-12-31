@@ -1,3 +1,4 @@
+import { exit } from "process";
 import { campaignType } from "../config/config";
 import { actionsBetween } from "../helpers";
 import { jsClick, refill } from "../modules/utils";
@@ -12,9 +13,11 @@ export class CampaignPage extends Page {
       if (await keyWord.isVisible()){
         await jsClick(keyWord)
         await actionsBetween({ms:"withoutReload", page: this.page})
+        console.log(oldKey, newKey);
         
         const popup = this.page.locator('.b-phrase-popup')
-        await refill(popup.locator('textarea.input__control'), newKey)
+        await popup.locator('textarea.input__control').fill(newKey) // Now it works 2021.12.31_09:19:35
+        // await refill(popup.locator('textarea.input__control'), newKey)
         await popup.locator('button.b-phrase-popup__ok-button').press('Enter')
         await actionsBetween({ms:"withoutReload", page: this.page})
       }

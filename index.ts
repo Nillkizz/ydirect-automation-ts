@@ -44,7 +44,7 @@ type cacheType = {
   for (const profile of conf.profiles){
     const ctx:pw.BrowserContext = await cache.contexts.getOrCreate(profile.name);
     const pages: pages = {
-      moderation : new Moderation(conf.time.moderateBg, ctx.pages()[0], conf),
+      moderation : new Moderation(conf.time.moderateBg, ctx.pages()[0], conf, ctx),
       campaigns : new CampaignsPage(await ctx.newPage()),
       campaign : new CampaignPage(await ctx.newPage()),
       editGroup : new EditGroupPage(await ctx.newPage()),
@@ -56,15 +56,14 @@ type cacheType = {
       const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
       await firstStep(pages, idValues, campaign)
 
-      pages.moderation.addToCheck(idValues)
-      await secondStep(await ctx.newPage(), idValues, campaign)
+      pages.moderation.addToCheck(idValues, campaign)
     }
   }
   console.log('Done.')
 })()
 
 async function getBaseIdValuesOfCampaign(campaignId:string, pages:pages){
-      await pages.campaigns.selectCampaign(campaignId, conf)
+      await pages.campaigns.selectCampaign(campaignId)
       await actionsBetween({page: pages.campaigns.page})
 
       const groupId = await pages.campaigns.getGroupId()

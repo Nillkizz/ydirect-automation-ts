@@ -1,13 +1,14 @@
 import pw from "playwright";
 import { pages } from "./index";
-import { Config } from "../config/config";
+import { campaignType, Config } from "../config/config";
 import { Beats } from "../modules/beats";
 import { baseIdValues } from "../index";
 import { Queues } from "../modules/queues";
 import { jsClick } from "../modules/utils";
 import { actionsBetween } from "../helpers";
+import { secondStep } from "../scripts";
 
-type campaignToCheck = {ts: number, idValues: baseIdValues}
+type campaignToCheck = {ts: number, idValues: baseIdValues, campaign:campaignType}
 type toCheck = {main: {interval?: number, items: Record<string, campaignToCheck>}, bg: {interval?: number, items: Record<string, campaignToCheck>}}
 
 export class Moderation extends Beats{
@@ -17,8 +18,9 @@ export class Moderation extends Beats{
   conf: Readonly<Config>
   queues: Queues
   currentCampaignId: string
+  ctx: pw.BrowserContext
 
-  constructor(interval: number, page:pw.Page, conf: Readonly<Config>){
+  constructor(interval: number, page:pw.Page, conf: Readonly<Config>, ctx: pw.BrowserContext){
     super(interval);
     page.goto('about:blank')
     this.conf = conf;
@@ -26,6 +28,7 @@ export class Moderation extends Beats{
     this.toCheck.bg.interval = conf.time.moderateBg
     this.queues = new Queues()
     this.currentCampaignId = ''
+    this.ctx = ctx
 
     for (const [beatName, beat] of Object.entries(this.toCheck)){
       this.registerBeat(beatName, beat.interval || interval);
@@ -50,7 +53,7 @@ export class Moderation extends Beats{
       this.queues.unenqueue('checkM' + campaignId)
     }
     for (const item of this.getSortedItems(beatName) ){
-      const {ts, idValues} = item;
+      const {ts, idValues, campaign} = item;
 
       const cb = async()=>{
         let isPassed = false;
@@ -63,6 +66,7 @@ export class Moderation extends Beats{
 
         if (isPassed) {
           rmItem(idValues.campaignId)
+          await secondStep(await this.ctx.newPage(), idValues, campaign)
           console.log(idValues.campaignId + ' Moderation passed!');
         }
         return true;
@@ -95,8 +99,8 @@ export class Moderation extends Beats{
     await actionsBetween({page: this.page})
   }
 
-  addToCheck(idValues:baseIdValues){
-    this.toCheck.main.items[idValues.campaignId] = {ts: Date.now(), idValues}
+  addToCheck(idValues:baseIdValues, campaign:campaignType){
+    this.toCheck.main.items[idValues.campaignId] = {ts: Date.now(), idValues, campaign}
     console.log(`Group №${idValues.groupId} watched for moderation`)
   }
 }

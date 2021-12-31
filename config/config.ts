@@ -3,10 +3,6 @@ import config from './config.json';
 export type campaignType = {
   id: string
   firstStep: {
-    domain: string
-    title: string
-    description: string
-    company: {name: string, address: string}
     keys: string[]
     replaceKeys: Record<string, string>
   }
@@ -20,6 +16,7 @@ export type campaignType = {
       country: string,
       city: string
     }
+    keys: string[]
   }
 }
 

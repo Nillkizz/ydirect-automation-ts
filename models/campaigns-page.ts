@@ -19,7 +19,7 @@ export class CampaignsPage extends Page {
     }
   }
 
-  async selectCampaign(campaignId: string, conf: Readonly<Config>) {
+  async selectCampaign(campaignId: string) {
     await this.navigate();
     await actionsBetween({page: this.page})
 

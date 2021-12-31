@@ -1,4 +1,5 @@
 import pw from "playwright"
+import { exit } from "process";
 
 
 export const sleep = (ms: number): Promise<void> =>new Promise(res=>setTimeout(res, ms))
@@ -20,8 +21,18 @@ export async function jsClick(locator:pw.Locator, all?:boolean) {
 }
 
 
-export const refill = async (el:pw.Locator, text:string)=>{
-  await el.press("Control+A");
-  await el.press("Backspace");
-  await el.fill(text);
+export const refill = async (a:pw.Locator|Array<[string, string]>, b:string|pw.Locator|pw.Page)=>{
+  const _r = async(el:pw.Locator, text:string)=>{
+    await el.focus();
+    await el.press("Control+Backspace");
+    await el.fill(text);
+  }
+
+  if (a instanceof Array && typeof b != 'string'){
+    for (const [selector, value] of a){
+      _r(b.locator(selector), value)
+    }
+  } else  {
+    _r(a as pw.Locator, b as string)
+  }
 }
