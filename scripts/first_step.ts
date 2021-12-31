@@ -1,11 +1,13 @@
+import pw from "playwright";
 import { actionsBetween } from "../helpers";
 
-import {  pages } from "../models";
+import { pages } from "../models";
 import { campaignType } from "../config/config";
 import { baseIdValues } from "..";
+import { jsClick } from "../modules/utils";
 
-type firstStepArgs = [pages: pages, idValues:baseIdValues, campaign:campaignType]
-export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
+type firstStepArgs = [pages: pages, idValues:baseIdValues, campaign:campaignType, ctx:pw.BrowserContext]
+export async function firstStep(...[pages, idValues, campaign, ctx]: firstStepArgs){
   const {campaignId, groupId, bannerId}= idValues;
   const campaignData = campaign.firstStep
 
@@ -25,8 +27,17 @@ export async function firstStep(...[pages, idValues, campaign]: firstStepArgs){
   await pages.editGroup.updateKeywords(campaignData.keys)
   await actionsBetween({page: pages.campaigns.page})
 
-  pages.campaigns.banner.unarchive()
-  await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
+  const shCampPage = await ctx.newPage();
+  await shCampPage.goto(`https://direct.yandex.ru/registered/main.pl?cid=${campaign.id}&cmd=showCamp&tab=all`)
+  await actionsBetween({page: shCampPage})
+  const group = shCampPage.locator(`.b-campaign-group__panel:has(.b-campaign-group__group-number:has-text("${idValues.groupId}"))`)
+  await jsClick(group.locator('.b-campaign-group__group-toggle button'))
+  await actionsBetween({ms: "withoutReload", page: shCampPage})
+  await jsClick(shCampPage.locator('.popup__body .b-group-preview2__controls-row button:has-text("Разархивировать")'))
+  await actionsBetween({ms: "withoutReload", page: shCampPage})
+  await jsClick(shCampPage.locator('.popup .popup__content button:has-text("Да")'))
+  await actionsBetween({ms: "withoutReload", page: shCampPage})
+  shCampPage.close();
 
   pages.campaign.setFormatUrlObject({campaignId})
   await pages.campaign.navigate();

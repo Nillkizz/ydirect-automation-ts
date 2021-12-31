@@ -11,7 +11,8 @@ import { firstStep } from './scripts';
 import { Moderation } from './models/moderation';
 import { CampaignPage } from './models/campaign-page';
 import { EditBannerPage } from './models/edit_banner-page';
-import { secondStep } from './scripts/second_step';
+
+console.info('YDirect-automation-ts v0.1.0')
 
 const conf:Readonly<Config> = new Config();
 addStringFormat();
@@ -54,7 +55,7 @@ type cacheType = {
 
     for (const campaign of profile.campaigns){
       const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
-      await firstStep(pages, idValues, campaign)
+      await firstStep(pages, idValues, campaign, ctx)
 
       await pages.moderation.сheck(idValues, campaign)
     }
