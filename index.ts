@@ -40,27 +40,29 @@ type cacheType = {
       } 
     }
   
-  for (const profile of conf.profiles){
-    const ctx:pw.BrowserContext = await cache.contexts.getOrCreate(profile.name);
+  conf.profiles.forEach(async profile=>{
+    try {
+      const ctx:pw.BrowserContext = await cache.contexts.getOrCreate(profile.name);
 
-    const pages: pages = {
-      moderation : new Moderation(conf.time.moderateBg, ctx.pages()[0], conf, ctx),
-      campaigns : new CampaignsPage(await ctx.newPage()),
-      campaign : new CampaignPage(await ctx.newPage()),
-      editGroup : new EditGroupPage(await ctx.newPage()),
-      editBanner : new EditBannerPage(await ctx.newPage()),
-    } as const
-    pages.moderation.setPages(pages);
+      const pages: pages = {
+        moderation : new Moderation(conf.time.moderateBg, ctx.pages()[0], conf, ctx),
+        campaigns : new CampaignsPage(await ctx.newPage()),
+        campaign : new CampaignPage(await ctx.newPage()),
+        editGroup : new EditGroupPage(await ctx.newPage()),
+        editBanner : new EditBannerPage(await ctx.newPage()),
+      } as const
+      pages.moderation.setPages(pages);
 
-    for (const campaign of profile.campaigns){
-      const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
-      console.info(idValues)
-      await firstStep(pages, idValues, campaign, ctx)
+      for (const campaign of profile.campaigns){
+        const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
+        console.info(idValues)
+        await firstStep(pages, idValues, campaign, ctx)
 
-      await pages.moderation.сheck(idValues, campaign)
-    }
-  }
-  console.log('Done.')
+        await pages.moderation.сheck(idValues, campaign)
+      }
+    } catch (err) { console.error(err)}
+  })
+  console.log('Started.')
 })()
 
 async function getBaseIdValuesOfCampaign(campaignId:string, pages:pages){
