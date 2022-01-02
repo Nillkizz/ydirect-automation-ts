@@ -37,11 +37,7 @@ export async function firstStep(...[pages, idValues, campaign, ctx]: firstStepAr
   await pages.campaign.replaceKeys(campaignData.replaceKeys)
   await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
   await unarchive(ctx, campaign, idValues)
-
-  pages.editBanner.setFormatUrlObject(idValues)
-  await pages.editBanner.navigate()
-  await actionsBetween({page: pages.editBanner.page})
-  
+  await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
   pages.campaigns.banner.start()
   await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
 }

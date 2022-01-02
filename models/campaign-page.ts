@@ -22,6 +22,7 @@ export class CampaignPage extends Page {
       }
     }
     await this.save()
+    await actionsBetween({page: this.page})
   }
   async save(){
     const btn = this.page.locator('.b-campaign-edit-panel__save button');
