@@ -1,4 +1,3 @@
-import pw from "playwright";
 import { campaignType } from "../config/config";
 import { actionsBetween } from "../helpers";
 import { jsClick } from "../modules/utils";

@@ -39,9 +39,10 @@ type cacheType = {
         }
       } 
     }
-
+  
   for (const profile of conf.profiles){
     const ctx:pw.BrowserContext = await cache.contexts.getOrCreate(profile.name);
+
     const pages: pages = {
       moderation : new Moderation(conf.time.moderateBg, ctx.pages()[0], conf, ctx),
       campaigns : new CampaignsPage(await ctx.newPage()),
@@ -53,6 +54,7 @@ type cacheType = {
 
     for (const campaign of profile.campaigns){
       const idValues = await getBaseIdValuesOfCampaign(campaign.id, pages)
+      console.info(idValues)
       await firstStep(pages, idValues, campaign, ctx)
 
       await pages.moderation.сheck(idValues, campaign)
@@ -62,15 +64,16 @@ type cacheType = {
 })()
 
 async function getBaseIdValuesOfCampaign(campaignId:string, pages:pages){
-      await pages.campaigns.selectCampaign(campaignId)
-      await actionsBetween({page: pages.campaigns.page})
+  await pages.campaigns.selectCampaign(campaignId)
+  await actionsBetween({page: pages.campaigns.page})
 
-      const groupId = await pages.campaigns.getGroupId()
-      await actionsBetween({ms:"withoutReload", page: pages.campaigns.page})
-      
-      pages.editGroup.setFormatUrlObject({campaignId: campaignId, groupId})
-      await pages.editGroup.navigate()
-      const bannerId = await pages.editGroup.getMainBannerId()
-      await actionsBetween({page: pages.campaigns.page})
+  const groupId = await pages.campaigns.getGroupId()
+  await actionsBetween({ms:"withoutReload", page: pages.campaigns.page})
+  
+  pages.editGroup.setFormatUrlObject({campaignId: campaignId, groupId})
+  await pages.editGroup.navigate()
+  const bannerId = await pages.editGroup.getMainBannerId()
+  await actionsBetween({page: pages.campaigns.page})
+
   return {campaignId, groupId, bannerId} as baseIdValues
 }

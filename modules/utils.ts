@@ -1,5 +1,4 @@
 import pw from "playwright"
-import { exit } from "process";
 
 
 export const sleep = (ms: number): Promise<void> =>new Promise(res=>setTimeout(res, ms))

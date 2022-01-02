@@ -1,5 +1,4 @@
 import pw from "playwright";
-import { Config } from "../config/config";
 import { actionsBetween } from "../helpers";
 import { jsClick } from "../modules/utils";
 import { Page } from "./page";

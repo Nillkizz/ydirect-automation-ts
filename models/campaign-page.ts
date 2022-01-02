@@ -1,7 +1,6 @@
-import { exit } from "process";
 import { campaignType } from "../config/config";
 import { actionsBetween } from "../helpers";
-import { jsClick, refill } from "../modules/utils";
+import { jsClick } from "../modules/utils";
 import { Page } from "./page";
 
 export class CampaignPage extends Page {
@@ -17,7 +16,7 @@ export class CampaignPage extends Page {
         
         const popup = this.page.locator('.b-phrase-popup')
         await popup.locator('textarea.input__control').fill(newKey) // Now it works 2021.12.31_09:19:35
-        // await refill(popup.locator('textarea.input__control'), newKey)
+        // await refill(popup.locator('textarea.input__control'), newKey) //  Now it not works 2021.12.31_09:19:35
         await popup.locator('button.b-phrase-popup__ok-button').press('Enter')
         await actionsBetween({ms:"withoutReload", page: this.page})
       }

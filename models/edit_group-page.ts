@@ -8,7 +8,7 @@ export class EditGroupPage extends Page{
 
   async getMainBannerId(){
     const rawIdString = await this.page.locator('.grid-banner-text-adv-cell__info').innerText()
-    const matched = rawIdString.match(/\d*/);
+    const matched = /\d+/g.exec(rawIdString);
     if (matched == null) throw Error('Campaign ' + this.campaignId + ' Has no banners!')
     return matched[0]
   }

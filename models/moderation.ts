@@ -28,12 +28,12 @@ class Moderation extends Beats{
     page.goto('about:blank')
     this.conf = conf;
     this.page = page;
-    this.toCheck.bg.interval = conf.time.moderateBg
     this.queues = new Queues()
     this.currentCampaignId = ''
     this.ctx = ctx
 
     for (const [beatName, beat] of Object.entries(this.toCheck)){
+      // Создает два бита, которые вызывают check, который ставит таску в глобальную очередь.
       this.registerBeat(beatName, beat.interval || interval);
       this.addTask(beatName, {name: 'check', cb: ()=>this._check(beatName as keyof toCheck)})
       this.runBeat(beatName);
@@ -58,7 +58,7 @@ class Moderation extends Beats{
     for (const item of this.getSortedItems(beatName) ){
       const {ts, idValues, campaign} = item;
 
-      const cb = async()=>{
+      const cb = async(): Promise<boolean> =>{
         let isPassed = false;
 
         await this.gotoKeywordsPage(idValues.campaignId);
@@ -69,7 +69,12 @@ class Moderation extends Beats{
 
         if (isPassed) {
           rmItem(idValues.campaignId)
-          await secondStep(await this.ctx.newPage(), idValues, campaign)
+          await this.removeRejectedKeys(idValues.campaignId)
+          const doSecondStep = async ()=>secondStep(await this.ctx.newPage(), idValues, campaign)
+          setTimeout(()=>{
+            this.queues.enqueue({cb:doSecondStep, taskName: 'secondStep'+idValues.campaignId })
+          }, this.conf.time.stage2)
+          
           console.log(idValues.campaignId + ' Moderation passed!');
           this.emit('done');
         }
@@ -102,6 +107,43 @@ class Moderation extends Beats{
     const tab = this.page.locator(`.tab-menu-link__link:has-text("Ставки и фразы")`);
     await Promise.all([this.page.waitForNavigation(), jsClick(tab)]);
     await actionsBetween({page: this.page})
+  }
+
+  async removeRejectedKeys(campaignId: string){
+    const page = await this.ctx.newPage();
+    console.log('removeRejectedKeys')
+    await page.goto(`https://direct.yandex.ru/registered/main.pl?cid=${campaignId}&cmd=showCamp`)
+    await actionsBetween({page})
+    const inactiveList = page.locator('.b-phrases-list-group_inactive_yes')
+    const inactiveBtn = inactiveList.locator('button:has-text("Показать отключенные и отклонённые")')
+
+    await actionsBetween({ms:'withoutReload', page})
+    const hasInactiveKeys = await inactiveBtn.isVisible()
+    if (hasInactiveKeys){
+        await jsClick(inactiveBtn)
+        await actionsBetween({ms:'withoutReload', page})
+        const inactiveKeys = inactiveList.locator('.b-group-phrase')
+        const keysCount = await inactiveKeys.count();
+        let ii = 0
+        for (let i=0; i<keysCount; i++){
+          let phrase = inactiveKeys.nth(ii)
+
+          await jsClick(phrase.locator('.b-phrase__content'))
+          await actionsBetween({ms:'withoutReload', page})
+          await jsClick(page.locator('.b-phrase-popup__content button:has-text("Удалить фразу")'))
+          await actionsBetween({ms:'withoutReload', page})
+          const msg = await phrase.locator('.b-phrase-key-words').innerText() + "  :  " + await phrase.locator('.b-group-phrase__info').innerText()
+
+          ii+=2
+          console.info(i, msg)
+        }
+        await jsClick(page.locator('.b-campaign-edit-panel__save button:has-text("Сохранить")'))
+        await actionsBetween({ms:'withoutReload', page})
+        console.log('ok')
+    } else {
+        console.log('Отклоненных ключей нет')
+    }
+    await page.close()
   }
 
   сheck(idValues:baseIdValues, campaign:campaignType){
