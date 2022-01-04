@@ -4,7 +4,7 @@ export type campaignType = {
   id: string
   firstStep: {
     keys: string[]
-    replaceKeys: Record<string, string>
+    replaceKeys: Record<string, string> | {}
   }
   secondStep:{
     domain: string,

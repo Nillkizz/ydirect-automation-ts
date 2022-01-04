@@ -34,8 +34,10 @@ export async function firstStep(...[pages, idValues, campaign, ctx]: firstStepAr
   await actionsBetween({page: pages.campaigns.page})
   pages.campaigns.banner.archive()
   await actionsBetween({ms: "withoutReload", page: pages.campaigns.page})
-  await pages.campaign.replaceKeys(campaignData.replaceKeys)
-  await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
+  if (Object.values(campaignData.replaceKeys).length > 0){
+    await pages.campaign.replaceKeys(campaignData.replaceKeys)
+    await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
+  }
   await unarchive(ctx, campaign, idValues)
   await actionsBetween({ms:"withoutReload", page: pages.campaign.page})
   pages.campaigns.banner.start()
@@ -51,7 +53,8 @@ async function unarchive(ctx: pw.BrowserContext, campaign:campaignType, idValues
   await actionsBetween({ms: "withoutReload", page: shCampPage})
   await jsClick(shCampPage.locator('.popup__body .b-group-preview2__controls-row button:has-text("Разархивировать")'))
   await actionsBetween({ms: "withoutReload", page: shCampPage})
-  await jsClick(shCampPage.locator('.popup .popup__content button:has-text("Да")'))
+
+  await jsClick(shCampPage.locator('.popup .popup__content:has-text("Вы действительно хотите разархивировать основное объявление?") button:has-text("Да")'))
   await actionsBetween({ms: "withoutReload", page: shCampPage})
   shCampPage.close();
 }

@@ -7,7 +7,7 @@ import { get_context } from "./modules/dolphin_anty/dolphin_anty";
 import { actionsBetween } from './helpers';
 import { addStringFormat } from './modules/string_format';
 import { EditGroupPage, CampaignsPage, pages} from "./models";
-import { firstStep, secondStep } from './scripts';
+import { firstStep } from './scripts';
 import { Moderation } from './models/moderation';
 import { CampaignPage } from './models/campaign-page';
 import { EditBannerPage } from './models/edit_banner-page';
