@@ -70,7 +70,7 @@ class Moderation extends Beats{
         if (isPassed) {
           rmItem(idValues.campaignId)
           await this.removeRejectedKeys(idValues.campaignId)
-          const doSecondStep = async ()=>secondStep(await this.ctx.newPage(), idValues, campaign)
+          const doSecondStep = async ()=>{ secondStep(await this.ctx.newPage(), idValues, campaign); return true }
           setTimeout(()=>{
             this.queues.enqueue({cb:doSecondStep, taskName: 'secondStep'+idValues.campaignId })
           }, this.conf.time.stage2)
