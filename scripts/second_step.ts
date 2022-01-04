@@ -32,6 +32,7 @@ export async function secondStep(...[page, idValues, campaign]: secondStepArgs){
   await actionsBetween({page})
 
   page.close()
+  console.log("End of second step on", campaign.id)
 }
 
 

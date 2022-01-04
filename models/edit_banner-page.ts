@@ -11,37 +11,43 @@ export class EditBannerPage extends Page{
 
   async changeDataSecondStep(campaign:campaignType){
     const cData = campaign.secondStep
-    const domain = (cData.domain == '-') ? '' : cData.domain
-    this.refillDomainTitleDescription(domain, cData.title, cData.description)
-
+    this.refillDomainTitleDescription(cData.domain, cData.title, cData.description)
+    
     await jsClick(this.page.locator('.expanded-edit-block__header:has-text("Виртуальная визитка")'))
     await actionsBetween({ms:"withoutReload", page:this.page})
+
+    const domain = (cData.domain.trim() == '-') ? '' : cData.domain
     if (domain.length > 0){
       await jsClick(this.page.locator('.vcard-editor button:has-text("Очистить поля")'))
       await actionsBetween({ms:"withoutReload", page:this.page})
     } else {
-      this.refillVCard(cData);
+      await this.refillVCard(cData);
     }
     await this.save()
   }
 
   async refillDomainTitleDescription(domain:string,title:string,description:string){
     const data: Array<[string, string]> = [
-    ['.banner-link-form__link-container input', domain],
-    ['.banners-base-info-editor__main-title-field input', title],
-    ['.banners-base-info-editor__description-field textarea', description]
+      ['.banner-link-form__link-container input', domain],
+      ['.banners-base-info-editor__main-title-field input', title],
+      ['.banners-base-info-editor__description-field textarea', description]
     ]
-    await refill(data, this.page)
+    await refill(data, this.page, 1) 
   }
   async refillVCard(cData:campaignType['secondStep']){
       const vcard = this.page.locator('.vcard-editor__content')
       const data: Array<[string, string]> = [
-        ['.vcard-editor__field_name:has(.vcard-editor__field-title:has-text("Название организации или ФИО")) .Textinput input', cData.vbc.name],
+        ['.vcard-editor__field_name .Textinput input', cData.vbc.name],
         ['.phone-number__field_country .Textinput input', cData.vbc.phone.cc],
         ['.phone-number__field_region .Textinput input', cData.vbc.phone.cr],
-        ['.phone-number__field_phone .Textinput input', cData.vbc.phone.p]
+        ['.phone-number__field_phone .Textinput input', cData.vbc.phone.p],
+        ['.address-input:has(.address-input__title:has-text("Страна")) .Textinput input', cData.vbc.country],
+        ['.address-input:has(.address-input__title:has-text("Город")) .Textinput input', cData.vbc.city],
       ]
-      await refill(data, vcard)
+      await refill(data, vcard, 1)
+      await actionsBetween({ms:"withoutReload", page:this.page})
+      vcard.locator('.editor-controls button:has-text("Готово")')
+      await actionsBetween({ms:"withoutReload", page:this.page})
   }
 
   async save(){

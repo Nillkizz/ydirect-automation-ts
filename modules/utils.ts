@@ -19,20 +19,38 @@ export async function jsClick(locator:pw.Locator, all?:boolean) {
   else await locator.evaluate(click);
 }
 
-
-export const refill = async (a:pw.Locator|Array<[string, string]>, b:string|pw.Locator|pw.Page)=>{
+type refillArgs = [
+  a:pw.Locator|Array<[string, string]>, 
+  b:string|pw.Locator|pw.Page, 
+  mode?:0|1
+]
+export const refill = async (...[a, b, mode=0]: refillArgs)=>{
   const _r = async(el:pw.Locator, text:string)=>{
-    await el.focus();
-    await el.press("Control+Backspace");
-    await el.fill(text);
+    switch (mode){
+      case 0:
+        await el.focus();
+        await el.press("Control+Backspace");
+        await el.fill(text);
+        break
+      case 1:
+        const _value = text.trim()
+        if (_value.length > 0){
+          const value = _value == "-" ? "" : _value
+          await el.focus();
+          await el.press('Control+A')
+          await el.press('Control+Backspace')
+          await el.fill(value)
+        }
+        break
+    }
   }
 
   if (a instanceof Array && typeof b != 'string'){
     for (const [selector, value] of a){
-      _r(b.locator(selector), value)
+      await _r(b.locator(selector), value)
     }
   } else  {
-    _r(a as pw.Locator, b as string)
+    await _r(a as pw.Locator, b as string)
   }
 }
 
