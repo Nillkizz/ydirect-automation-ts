@@ -26,7 +26,7 @@ export class CampaignPage extends Page {
   }
   async save(){
     const btn = this.page.locator('.b-campaign-edit-panel__save button');
-    jsClick(btn);
+    await Promise.all([this.page.waitForNavigation(), jsClick(btn)]);
   }
 }
 

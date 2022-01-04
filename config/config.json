@@ -11,7 +11,7 @@
       "name": "ydirect1",
       "campaigns": [
         {
-          "id": "69386236",
+          "id": "69518134",
           "firstStep": {
             "keys": ["Ключ 1", "Зеркало", "Автомат", "Плоский", "Машинка"],
             "replaceKeys": {
@@ -20,7 +20,7 @@
             }
           },
           "secondStep": {
-            "domain": "-",
+            "domain": "https://wp-kama.ru/",
             "title": "Мускатный орех",
             "description": "Киносъёмки – загадочный и притягательный процесс.",
             "vbc": {

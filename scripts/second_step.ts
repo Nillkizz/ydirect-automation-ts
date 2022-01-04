@@ -4,6 +4,7 @@ import { campaignType } from "../config/config";
 import { actionsBetween } from '../helpers';
 import { CampaignsPage, EditGroupPage } from '../models';
 import { EditBannerPage } from '../models/edit_banner-page';
+import { sleep } from '../modules/utils';
 
 type secondStepArgs = [page: pw.Page, idValues:baseIdValues, campaign:campaignType]
 export async function secondStep(...[page, idValues, campaign]: secondStepArgs){
@@ -17,6 +18,7 @@ export async function secondStep(...[page, idValues, campaign]: secondStepArgs){
   const egpage = new EditGroupPage(page)
   egpage.setFormatUrlObject(idValues)
   await egpage.navigate()
+  sleep(3000)
   await actionsBetween({page})
   await egpage.updateKeywords(campaign.secondStep.keys)
   await actionsBetween({page})
